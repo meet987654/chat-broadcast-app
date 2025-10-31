@@ -1,0 +1,78 @@
+# Node
+node_modules/
+
+# Optional npm cache
+.npm
+
+# Logs
+logs/
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+
+# Dependency directories (for any subproject)
+node_modules/
+
+# Build outputs
+dist/
+build/
+out/
+.coverage/
+coverage/
+
+# Vite / bundler caches
+.vite/
+.cache/
+.parcel-cache/
+
+# Next.js, Nuxt, Expo
+.next/
+.nuxt/
+.expo/
+
+# TypeScript
+*.tsbuildinfo
+
+# Environment files
+.env
+.env.*.local
+.env.local
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Editors and IDEs
+.vscode/
+.idea/
+*.suo
+*.ntvs*
+*.vscode/*
+
+# JetBrains
+*.iml
+
+# Test output
+coverage/
+nyc_output/
+
+# Misc
+*.tgz
+*.log
+
+# Secrets (if any)
+secrets.env
+
+# OneDrive / backup files
+~$*
+
+# Windows image file caches
+ehthumbs.db
+
+# Prevent committing built front-end artifacts if you put them in public or dist
+/public/dist/
+
+# Keep lockfiles tracked (do not ignore package-lock.json or yarn.lock)
+# If you want to ignore specific project lockfiles, adjust here
