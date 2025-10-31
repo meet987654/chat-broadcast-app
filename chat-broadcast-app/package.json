@@ -1,0 +1,23 @@
+{
+  "name": "chat-broadcast-app",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "type": "module",
+  "scripts": {
+    "dev": "tsc && node dist/index.js",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "@tailwindcss/vite": "^4.1.16",
+    "@types/express": "^5.0.5",
+    "@types/ws": "^8.18.1",
+    "express": "^5.1.0",
+    "tailwindcss": "^4.1.16",
+    "typescript": "^5.9.3",
+    "ws": "^8.18.3"
+  }
+}
