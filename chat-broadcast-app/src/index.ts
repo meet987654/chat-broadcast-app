@@ -13,6 +13,7 @@ const DEFAULT_ALLOWED = [
     'https://chat-broadcast-app.onrender.com',
     // common FE deployment hostname on Render (add your real FE domain if different)
     'https://chat-broadcast-app-fe.onrender.com',
+    'https://chat-broadcast.vercel.app',
 ];
 const allowedOrigins = (process.env.ALLOWED_ORIGINS
     ? process.env.ALLOWED_ORIGINS.split(',').map((s) => s.trim())
