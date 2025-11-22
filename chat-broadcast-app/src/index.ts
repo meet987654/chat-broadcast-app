@@ -24,39 +24,45 @@ let allSockets:User[]=[];
 //event handler 
 ws.on("connection",(socket)=>{
     socket.on('message',(message)=>{
+        console.log('Received raw message:', String(message));
         let parsedMessage: any = null;
         try {
             // messages are expected as JSON strings
-            // some clients may send plain text; handle gracefully
             parsedMessage = JSON.parse(String(message));
         } catch (err) {
-            // If not JSON, treat as raw chat message and broadcast to all
+            // If not JSON, treat as raw chat message and broadcast to all clients
+            console.log('Non-JSON message received, broadcasting raw string');
+            const payload = { type: 'chat', payload: { message: String(message) } };
             for (let i = 0; i < allSockets.length; i++) {
-                allSockets[i]?.socket.send(String(message));
+                allSockets[i]?.socket.send(JSON.stringify(payload));
             }
             return;
         }
 
-        if(parsedMessage.type==="join"){
-        
-           allSockets.push({ socket: socket, roomId: parsedMessage.payload.roomId });
-           console.log(`User joined room: ${parsedMessage.payload.roomId}`);
-           return;
+        console.log('Parsed message:', parsedMessage);
+
+        if (parsedMessage.type === 'join') {
+            allSockets.push({ socket: socket, roomId: parsedMessage.payload.roomId });
+            console.log(`User joined room: ${parsedMessage.payload.roomId}`);
+            return;
         }
 
-        if(parsedMessage.type==="chat"){
-            
-            let currentUserRoom=null;
+        if (parsedMessage.type === 'chat') {
+            let currentUserRoom: string | null = null;
 
-            for(let i=0;i<allSockets.length;i++){
-                if(allSockets[i]?.socket===socket){
-                    currentUserRoom=allSockets[i]?.roomId;
+            for (let i = 0; i < allSockets.length; i++) {
+                if (allSockets[i]?.socket === socket) {
+                    currentUserRoom = allSockets[i]?.roomId || null;
                 }
             }
 
-            for(let i=0;i<allSockets.length;i++){
-                if(allSockets[i]?.roomId===currentUserRoom){
-                    allSockets[i]?.socket.send(parsedMessage.payload.message);
+            console.log('Broadcasting chat to room:', currentUserRoom);
+
+            const out = { type: 'chat', payload: { message: parsedMessage.payload.message, roomId: currentUserRoom } };
+
+            for (let i = 0; i < allSockets.length; i++) {
+                if (allSockets[i]?.roomId === currentUserRoom) {
+                    allSockets[i]?.socket.send(JSON.stringify(out));
                 }
             }
         }
