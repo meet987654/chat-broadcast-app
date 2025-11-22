@@ -36,6 +36,14 @@ app.use((req, res, next) => {
 
 app.get('/health', (_req, res) => res.json({ ok: true }));
 
+// Debug endpoint: show the current allowed origins and env var state
+app.get('/debug/origins', (_req, res) => {
+    res.json({
+        allowedOrigins,
+        envAllowedOrigins: process.env.ALLOWED_ORIGINS || null,
+    });
+});
+
 // Create HTTP server and attach the Express app
 const server = http.createServer(app);
 
