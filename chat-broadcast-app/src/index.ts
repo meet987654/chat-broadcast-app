@@ -1,26 +1,58 @@
 import {WebSocketServer,WebSocket} from 'ws';
+import express from 'express';
 import http from 'http';
 
 // Use the environment PORT when deployed (Render/Heroku assign a port).
 const PORT = Number(process.env.PORT) || 8080;
 
-// Create an HTTP server so the same port can handle HTTP + WebSocket upgrades
-const server = http.createServer((req, res) => {
-    res.writeHead(200, { 'Content-Type': 'text/plain' });
-    res.end('WebSocket server running');
+// Configure allowed origins. You can set ALLOWED_ORIGINS env var as
+// a comma-separated list (example: https://your-frontend.app,https://your-backend.app)
+const DEFAULT_ALLOWED = [
+    'http://localhost:5173',
+    'http://localhost:3000',
+    'https://chat-broadcast-app.onrender.com',
+];
+const allowedOrigins = (process.env.ALLOWED_ORIGINS
+    ? process.env.ALLOWED_ORIGINS.split(',').map((s) => s.trim())
+    : DEFAULT_ALLOWED);
+
+const app = express();
+
+// Simple CORS-like middleware for HTTP endpoints. Sets Access-Control-Allow-Origin
+app.use((req, res, next) => {
+    const origin = req.headers.origin as string | undefined;
+    if (origin && allowedOrigins.includes(origin)) {
+        res.setHeader('Access-Control-Allow-Origin', origin);
+        res.setHeader('Access-Control-Allow-Methods', 'GET,POST,OPTIONS');
+        res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
+    }
+    // quick respond to OPTIONS preflight
+    if (req.method === 'OPTIONS') return res.sendStatus(204);
+    next();
 });
+
+app.get('/health', (_req, res) => res.json({ ok: true }));
+
+// Create HTTP server and attach the Express app
+const server = http.createServer(app);
 
 const ws = new WebSocketServer({
     server,
     verifyClient: (info, done) => {
-        console.log('Incoming origin:', info.origin);
-        // In production you may want to validate info.origin against an allowlist
-        done(true); // accept all origins for now
+        const origin = info.origin;
+        console.log('Incoming WebSocket origin:', origin);
+        // Accept if origin is absent (non-browser client) or matches allowlist
+        if (!origin || allowedOrigins.includes(origin)) {
+            done(true);
+        } else {
+            console.warn('Rejected WebSocket origin:', origin);
+            done(false);
+        }
     },
 });
 
 server.listen(PORT, () => {
-    console.log(`Server listening on port ${PORT} (websocket path on same port)`);
+    console.log(`Server listening on port ${PORT} (HTTP+WebSocket)`);
 });
 
 interface User{
