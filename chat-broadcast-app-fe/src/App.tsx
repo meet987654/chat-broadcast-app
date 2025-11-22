@@ -4,6 +4,8 @@ import { useEffect, useRef, useState } from 'react';
 // Dev (local): use ws://localhost:8080
 // Prod: use wss://chat-broadcast-app.onrender.com
 const BACKEND_URL = import.meta.env.VITE_BACKEND_URL || 'wss://chat-broadcast-app.onrender.com';
+// Log the resolved backend URL at runtime to help debug deployed builds
+console.log('Resolved BACKEND_URL:', BACKEND_URL);
 
 function App() {
   const [messages, setMessages] = useState<string[]>([]);
