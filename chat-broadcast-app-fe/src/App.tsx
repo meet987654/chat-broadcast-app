@@ -1,5 +1,10 @@
 import { useEffect, useRef, useState } from 'react';
 
+// Use VITE_BACKEND_URL env var for development/production flexibility.
+// Dev (local): use ws://localhost:8080
+// Prod: use wss://chat-broadcast-app.onrender.com
+const BACKEND_URL = import.meta.env.VITE_BACKEND_URL || 'wss://chat-broadcast-app.onrender.com';
+
 function App() {
   const [messages, setMessages] = useState<string[]>([]);
   const [input, setInput] = useState('');
@@ -16,7 +21,7 @@ function App() {
   useEffect(() => {
     if (!hasJoined) return;
 
-    const ws = new WebSocket('wss://chat-broadcast-app.onrender.com');
+    const ws = new WebSocket(BACKEND_URL);
     socketRef.current = ws;
 
     ws.onopen = () => {
