@@ -1,17 +1,27 @@
 import {WebSocketServer,WebSocket} from 'ws';
+import http from 'http';
 
-// Use fixed port 8080 for local dev (no env variable per request)
-const PORT = 8080;
+// Use the environment PORT when deployed (Render/Heroku assign a port).
+const PORT = Number(process.env.PORT) || 8080;
+
+// Create an HTTP server so the same port can handle HTTP + WebSocket upgrades
+const server = http.createServer((req, res) => {
+    res.writeHead(200, { 'Content-Type': 'text/plain' });
+    res.end('WebSocket server running');
+});
 
 const ws = new WebSocketServer({
-    port: PORT,
+    server,
     verifyClient: (info, done) => {
         console.log('Incoming origin:', info.origin);
-        done(true); // accept all origins
+        // In production you may want to validate info.origin against an allowlist
+        done(true); // accept all origins for now
     },
 });
 
-console.log(`WebSocket server listening on ws://localhost:${PORT}`);
+server.listen(PORT, () => {
+    console.log(`Server listening on port ${PORT} (websocket path on same port)`);
+});
 
 interface User{
     socket:WebSocket;   
