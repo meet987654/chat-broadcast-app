@@ -6,6 +6,7 @@ function App() {
   const [roomId, setRoomId] = useState('');
   const [hasJoined, setHasJoined] = useState(false);
   const socketRef = useRef<WebSocket | null>(null);
+  const [connected, setConnected] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement | null>(null);
 
   useEffect(() => {
@@ -20,6 +21,7 @@ function App() {
 
     ws.onopen = () => {
       console.log('Connected to WebSocket server');
+      setConnected(true);
       ws.send(JSON.stringify({ type: 'join', payload: { roomId } }));
     };
 
@@ -34,6 +36,7 @@ function App() {
     ws.onclose = () => {
       console.log('WebSocket disconnected');
       socketRef.current = null;
+      setConnected(false);
     };
 
     return () => {
@@ -51,7 +54,10 @@ function App() {
 
   const sendMessage = () => {
     const ws = socketRef.current;
-    if (!ws || ws.readyState !== WebSocket.OPEN) return;
+    if (!ws || ws.readyState !== WebSocket.OPEN) {
+      console.warn('Socket not open — cannot send');
+      return;
+    }
     if (input.trim() === '') return;
 
     ws.send(JSON.stringify({ type: 'chat', payload: { message: input } }));
@@ -145,10 +151,11 @@ function App() {
             placeholder="Type your message..."
           />
           <button
-            className="px-8 py-3 bg-black text-white font-semibold rounded-lg hover:bg-gray-800 transition"
+            className={`px-8 py-3 ${connected ? 'bg-black hover:bg-gray-800' : 'bg-gray-300 cursor-not-allowed'} text-white font-semibold rounded-lg transition`}
             onClick={sendMessage}
+            disabled={!connected}
           >
-            Send
+            {connected ? 'Send' : 'Connecting...'}
           </button>
         </div>
       </div>
