@@ -80,8 +80,6 @@ Troubleshooting
 - If the frontend cannot connect to the WebSocket server, make sure the server is running and reachable at `ws://localhost:8080` and no firewall is blocking the port.
 - If TypeScript compilation fails, check `tsconfig.json` and ensure `typescript` is installed.
 
-If you'd like, I can:
-- Add a `dev:watch` script for live reload on the server.
-- Add a single npm workspace config so you can run `npm install` and `npm run dev --workspaces` from the repo root (or `pnpm`/`yarn` workspace setup).
-
-Enjoy developing! If you want, I can commit this README into the repo for you.
+Deployed URLs
+Frontend-https://chat-broadcast.vercel.app
+backend-wss://chat-broadcast-app.onrender.com
